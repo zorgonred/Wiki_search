@@ -1,0 +1,243 @@
+<title>Wikipedia Search & Replace</title>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+
+
+<div ng-app="myApp" ng-controller="wikiSearch" class="card">
+    <h1>Wikipedia Search and Replace</h1>
+    <h4>Search Wikipedia by typing a phrase below.</h4>
+
+    <p class="title">SEARCH PHRASE</p>
+    <input ng-model-options="{debounce:1000}"
+           ng-disabled="loadingSearch"
+           ng-model="searchPhrase" ng-change="getSearchResultFromWikipedia(searchPhrase)" type="text" id="search"
+           placeholder="Search Wikipedia" required>
+
+    <button type="button" ng-click="getSearchResultFromWikipedia(searchPhrase)" id="search-button">Search</button>
+
+    <p class="title">REPLACE WITH</p>
+    <input ng-model="replacement" type="text" id="replace" placeholder="Replacement" required>
+
+    <button type="button" ng-click="replaceFirstOccurrence(replacement)" id="replace-button">Replace</button>
+
+    <button type="button" ng-click="replaceAll(replacement)" id="replace-all-button">Replace All</button>
+
+
+    <p class="loading-text" ng-show="loadingSearch">Loading..</p>
+
+    <p class="error-text" ng-show="searchError">Error!!</p>
+
+
+    <div ng-repeat="entry in entries">
+        <div class="card-results">
+
+            <h4>{{entry.title}}</h4>
+
+            <p ng-bind-html="entry.snippet |trusted"></p>
+
+
+        </div>
+    </div>
+
+</div>
+
+
+<style>
+    /* General element styles */
+
+    h1 {
+        color: #1D2936;
+        font-family: 'lato';
+        font-size: 24px;
+        text-align: center;
+        font-weight: 800;
+        padding-bottom: 10px;
+        line-height: 0px;
+    }
+
+    h4 {
+        color: #858892;
+        font-family: 'lato';
+        text-align: center;
+        font-size: 16px;
+        font-weight: 400;
+        padding-bottom: 10px;
+        line-height: 25px;
+    }
+
+    .loading-text {
+        font-family: 'lato';
+        text-align: center;
+        color: green;
+    }
+
+
+    .searchmatch {
+        text-decoration: underline;
+        color: yellow;
+    }
+
+
+    .error-text {
+        font-family: 'lato';
+        text-align: center;
+        color: indianred;
+    }
+
+    body {
+        background-color: #F7F8F9;
+        display: flex;
+        justify-content: center;
+        padding: 1%;
+    }
+
+    /* Login section */
+
+    .card {
+        background-color: white;
+        border: 1px solid #E2E2E2;
+        border-radius: 6px;
+        height: 100%;
+        width: 500px;
+        padding: 50px;
+        display: block;
+        overflow: auto;
+
+    }
+
+    .card-results {
+        background-color: white;
+        margin-top: 10px;
+        border: 1px solid #E2E2E2;
+        border-radius: 6px;
+        height: 140px;
+        width: 380px;
+        padding: 50px;
+
+    }
+
+    button {
+        color: white;
+        font-family: 'lato';
+        font-size: 14px;
+        font-weight: 800;
+        background-color: #373833;
+        border: none;
+        margin-top: 30px;
+        border-radius: 4px;
+        height: 50px;
+        width: 100%;
+        padding: 0px;
+    }
+
+
+    input {
+        height: 40px;
+        width: 97%;
+        font-size: 15px;
+        font-family: 'lato';
+        margin-bottom: 5px;
+        padding-left: 10px;
+        border: 1px solid #D7D8DB;
+        border-radius: 2px;
+    }
+
+    input:focus {
+        border: 1px solid #3B60E4;
+        box-shadow: none;
+        -webkit-transition: none;
+        -moz-transition: none;
+        -ms-transition: none;
+        -o-transition: none;
+        outline: none;
+    }
+
+    ::placeholder {
+        color: #D7D8DB;
+        font-weight: 400;
+    }
+
+    .title {
+        color: #858892;
+        opacity: .7;
+        font-family: 'lato';
+        font-size: 12px;
+        font-weight: 600;
+        padding-top: 5px;
+    }
+
+
+</style>
+
+<script type="text/javascript">
+    'use strict';
+    var wikiSearchModule = angular.module('myApp', [])
+        .controller('wikiSearch', function ($scope, $http) {
+
+
+            function ngOnit() {
+                $scope.searchPhrase = "Hello";
+                $scope.entries = [];
+                $scope.loadingSearch = false;
+                $scope.searchError = false;
+            }
+
+            ngOnit();
+
+
+            $scope.getSearchResultFromWikipedia = (search) => {
+                $scope.loadingSearch = true;
+
+                $http({
+                    method: 'GET',
+                    url: 'https://en.wikipedia.org/w/api.php?action=query&list=search&format=json&srsearch=' + search + '&srlimit=10',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                }).then(
+                    function successCallback(response) {
+                        console.log('SUCCESS :-) ' + angular.toJson(response.data));
+                        $scope.loadingSearch = false;
+
+                        $scope.entries = response.data.query.search;
+
+
+                    },
+                    function errorCallback(response) {
+                        console.log('FAILED :-( ' + response.status);
+                        $scope.loadingSearch = false;
+                        $scope.searchError = true;
+                    });
+
+
+            }
+
+
+            $scope.replaceFirstOccurrence = (replacement) => {
+
+                const firstOccurrence = document.querySelectorAll('span');
+                firstOccurrence[0].innerHTML = replacement;
+
+
+
+            }
+
+            $scope.replaceAll = (replacement) => {
+                const allOccurrence = document.querySelectorAll('span');
+
+                allOccurrence.forEach(occurrence => occurrence.innerHTML = replacement);
+
+            }
+
+        });
+
+
+    wikiSearchModule.filter('trusted', function ($sce) {
+        return function (html) {
+            return $sce.trustAsHtml(html)
+        }
+    })
+
+
+</script>
+<!-- *****************************   WIKI SEARCH *********************************************-->
