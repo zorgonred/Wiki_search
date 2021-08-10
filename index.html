@@ -23,7 +23,7 @@
 
     <p class="loading-text" ng-show="loadingSearch">Loading..</p>
 
-    <p class="error-text" ng-show="searchError">Error!!</p>
+    <p class="error-text" ng-show="searchError">Error!! Be sure to disable same origin policy</p>
 
 
     <div ng-repeat="entry in entries">
@@ -210,7 +210,6 @@
 
 
             }
-
 
             $scope.replaceFirstOccurrence = (replacement) => {
 
