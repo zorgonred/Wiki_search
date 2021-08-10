@@ -1,7 +1,6 @@
 <title>Wikipedia Search & Replace</title>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
 
-
 <div ng-app="myApp" ng-controller="wikiSearch" class="card">
     <h1>Wikipedia Search and Replace</h1>
     <h4>Search Wikipedia by typing a phrase below.</h4>
@@ -70,7 +69,7 @@
         color: green;
     }
 
-
+/*This is the class found in the HTML string response*/
     .searchmatch {
         text-decoration: underline;
         color: yellow;
@@ -175,7 +174,7 @@
 
 
             function ngOnit() {
-                $scope.searchPhrase = "Hello";
+                $scope.searchPhrase = "Cars";
                 $scope.entries = [];
                 $scope.loadingSearch = false;
                 $scope.searchError = false;
@@ -231,7 +230,7 @@
 
         });
 
-
+    //Filter to read HTML String
     wikiSearchModule.filter('trusted', function ($sce) {
         return function (html) {
             return $sce.trustAsHtml(html)
