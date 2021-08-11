@@ -183,6 +183,7 @@
 
             $scope.getSearchResultFromWikipedia = (search) => {
                 $scope.loadingSearch = true;
+                $scope.entries=[];
 
                 $http({
                     method: 'GET',
