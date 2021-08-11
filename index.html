@@ -212,7 +212,7 @@
 
             $scope.replaceFirstOccurrence = (replacement) => {
 
-                const firstOccurrence = document.querySelectorAll('span');
+                const firstOccurrence = document.querySelectorAll('span.searchmatch');
                 firstOccurrence[0].innerHTML = replacement;
 
 
@@ -220,7 +220,7 @@
             }
 
             $scope.replaceAll = (replacement) => {
-                const allOccurrence = document.querySelectorAll('span');
+                const allOccurrence = document.querySelectorAll('span.searchmatch');
 
                 allOccurrence.forEach(occurrence => occurrence.innerHTML = replacement);
 
